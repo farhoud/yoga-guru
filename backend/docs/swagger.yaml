@@ -1,0 +1,821 @@
+basePath: /
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  handlers.CreateCourseRequest:
+    properties:
+      capacity:
+        type: integer
+      courseType:
+        type: string
+      level:
+        $ref: '#/definitions/models.CourseLevel'
+      price:
+        format: float64
+        type: number
+      schedule:
+        type: string
+      title:
+        type: string
+    type: object
+  handlers.EnrollRequest:
+    properties:
+      courseID:
+        type: integer
+      enrollmentType:
+        $ref: '#/definitions/models.EnrollmentType'
+    type: object
+  handlers.LoginRequest:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
+  handlers.RegisterRequest:
+    properties:
+      gender:
+        enum:
+        - male
+        - female
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      phone:
+        type: string
+      role:
+        enum:
+        - student
+        - instructor
+        type: string
+    required:
+    - name
+    - password
+    - phone
+    type: object
+  handlers.UpdateCourseRequest:
+    properties:
+      capacity:
+        type: integer
+      courseType:
+        type: string
+      level:
+        $ref: '#/definitions/models.CourseLevel'
+      price:
+        format: float64
+        type: number
+      schedule:
+        type: string
+      title:
+        type: string
+    type: object
+  handlers.UpdateUserRoleRequest:
+    properties:
+      role:
+        type: string
+    type: object
+  models.Course:
+    properties:
+      capacity:
+        description: Max number of students
+        type: integer
+      courseType:
+        description: e.g., Hatha, Vinyasa, Ashtanga
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      instructor:
+        allOf:
+        - $ref: '#/definitions/models.User'
+        description: GORM association
+      instructorID:
+        description: ID of the instructor creating the course
+        type: integer
+      level:
+        $ref: '#/definitions/models.CourseLevel'
+      price:
+        description: Price per single session
+        format: float64
+        type: number
+      schedule:
+        description: e.g., "Every Monday 10:00 AM, Wednesday 6:00 PM" (can be JSON
+          string for more complex schedules)
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.CourseLevel:
+    enum:
+    - beginner
+    - intermediate
+    - advanced
+    type: string
+    x-enum-varnames:
+    - Beginner
+    - Intermediate
+    - Advanced
+  models.Enrollment:
+    properties:
+      course:
+        $ref: '#/definitions/models.Course'
+      courseID:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      discountApplied:
+        description: Discount percentage applied
+        format: float64
+        type: number
+      endDate:
+        description: End date for subscriptions (monthly, yearly etc.)
+        type: string
+      enrollmentType:
+        $ref: '#/definitions/models.EnrollmentType'
+      id:
+        type: integer
+      pricePaid:
+        format: float64
+        type: number
+      startDate:
+        type: string
+      updatedAt:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      userID:
+        type: integer
+    type: object
+  models.EnrollmentType:
+    enum:
+    - pre_session
+    - monthly
+    - six_month
+    - yearly
+    type: string
+    x-enum-varnames:
+    - PreSession
+    - Monthly
+    - SixMonth
+    - Yearly
+  models.Profile:
+    properties:
+      avatarURL:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      gender:
+        $ref: '#/definitions/models.UserGender'
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: integer
+      passwordHash:
+        description: Password hash, never expose in JSON
+        type: string
+      phone:
+        type: string
+      profile:
+        $ref: '#/definitions/models.Profile'
+      role:
+        $ref: '#/definitions/models.UserRole'
+      updatedAt:
+        type: string
+      uuid:
+        type: string
+    type: object
+  models.UserGender:
+    enum:
+    - male
+    - female
+    - ""
+    type: string
+    x-enum-varnames:
+    - Male
+    - Female
+    - None
+  models.UserRole:
+    enum:
+    - admin
+    - instructor
+    - student
+    type: string
+    x-enum-varnames:
+    - Admin
+    - Instructor
+    - Student
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a backend API for a yoga session management system.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Yoga Backend API
+  version: "1.0"
+paths:
+  /courses:
+    get:
+      description: Retrieve a list of all available yoga courses.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Course'
+            type: array
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all courses
+      tags:
+      - Courses
+    post:
+      consumes:
+      - application/json
+      description: Create a new yoga course with details like title, type, schedule,
+        level, price, and capacity.
+      parameters:
+      - description: Course details
+        in: body
+        name: course
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateCourseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Course'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new course (Instructor/Admin only)
+      tags:
+      - Courses
+  /courses/{id}:
+    delete:
+      description: Delete an existing yoga course. Only the course instructor or an
+        admin can delete a course.
+      parameters:
+      - description: Course ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a course (Instructor/Admin only)
+      tags:
+      - Courses
+    get:
+      description: Retrieve details of a specific yoga course by its ID.
+      parameters:
+      - description: Course ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Course'
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a course by ID
+      tags:
+      - Courses
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing yoga course. Only the course
+        instructor or an admin can update a course.
+      parameters:
+      - description: Course ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated course details
+        in: body
+        name: course
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateCourseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Course'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing course (Instructor/Admin only)
+      tags:
+      - Courses
+  /enrollments:
+    post:
+      consumes:
+      - application/json
+      description: Allows a student to enroll in a yoga course with various enrollment
+        packages.
+      parameters:
+      - description: Enrollment details
+        in: body
+        name: enrollment
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.EnrollRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Enrollment'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: 'error: Already enrolled or course full'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enroll a student in a course (Student only)
+      tags:
+      - Enrollments
+  /enrollments/{id}:
+    delete:
+      description: Allows a student to cancel their enrollment, or an admin to cancel
+        any enrollment.
+      parameters:
+      - description: Enrollment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Enrollment not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Cancel an enrollment (Student/Admin only)
+      tags:
+      - Enrollments
+    get:
+      description: Retrieve details of a specific enrollment by its ID. (Admin/Enrolled
+        Student only)
+      parameters:
+      - description: Enrollment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Enrollment'
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Enrollment not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get enrollment by ID
+      tags:
+      - Enrollments
+  /enrollments/me:
+    get:
+      description: Retrieve a list of all courses a student is enrolled in.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Enrollment'
+            type: array
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get student's enrollments
+      tags:
+      - Enrollments
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password, returning a JWT token.
+      parameters:
+      - description: User login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'token: JWT_TOKEN'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Invalid credentials'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Log in a user
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with username, email, and password. Role defaults
+        to 'student'.
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: User registered successfully'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: 'error: User with this email or username already exists'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Auth
+  /users/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: Allows an admin to update the role of any user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New role for the user
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateUserRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: User not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a user's role (Admin only)
+      tags:
+      - Users
+  /users/me:
+    get:
+      description: Retrieve the profile details of the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: User not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user's profile
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

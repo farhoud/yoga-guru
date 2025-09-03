@@ -1,0 +1,11 @@
+node_modules
+ios
+android
+.expo
+.vscode
+ignite/ignite.json
+package.json
+.eslintignore
+*.ejs
+.maestro
+app/components/ui
