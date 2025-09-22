@@ -3,7 +3,9 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"time"
 	"yoga-backend/models"
+	"yoga-backend/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -21,12 +23,19 @@ func NewCourseHandler(db *gorm.DB) *CourseHandler {
 
 // CreateCourseRequest defines the request body for creating a course.
 type CreateCourseRequest struct {
-	Title      string              
-	CourseType string              
-	Schedule   string              
-	Level      models.CourseLevel 
-	Price      float64             
-	Capacity   int                 
+	Title      string
+	CourseType string
+	Schedules  []CourseSchedule
+	Level      models.CourseLevel
+	Price      float64
+	Capacity   int
+}
+
+type CourseSchedule struct {
+	DayOfWeekMask models.DayOfWeekMask
+	Recurrence    models.ScheduleRecurrence
+	StartTime     utils.CustomTime
+	EndTime       utils.CustomTime
 }
 
 // CreateCourse godoc
@@ -66,10 +75,30 @@ func (h *CourseHandler) CreateCourse(c *gin.Context) {
 		return
 	}
 
+	schedules := make([]models.Schedule, len(req.Schedules))
+	for i, val := range req.Schedules {
+		if val.DayOfWeekMask < 0 && val.DayOfWeekMask > 128 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid day of week"})
+			return
+		}
+
+		switch val.Recurrence {
+		case models.Weekly, models.BiWeekly, models.MonthlyR:
+		default:
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Recurrence"})
+			return
+		}
+		schedules[i] = models.Schedule{
+			Recurrence: val.Recurrence,
+			StartTime:  time.Time(val.StartTime),
+			EndTime:    time.Time(val.EndTime),
+			DaysMask:   val.DayOfWeekMask,
+		}
+	}
 	course := models.Course{
 		Title:        req.Title,
 		CourseType:   req.CourseType,
-		Schedule:     req.Schedule,
+		Schedules:    schedules,
 		Level:        req.Level,
 		Price:        req.Price,
 		Capacity:     req.Capacity,
@@ -133,12 +162,12 @@ func (h *CourseHandler) GetCourseByID(c *gin.Context) {
 
 // UpdateCourseRequest defines the request body for updating a course.
 type UpdateCourseRequest struct {
-	Title      *string              
-	CourseType *string              
-	Schedule   *string              
-	Level      *models.CourseLevel 
-	Price      *float64             
-	Capacity   *int                 
+	Title      *string
+	CourseType *string
+	Schedules  []CourseSchedule
+	Level      *models.CourseLevel
+	Price      *float64
+	Capacity   *int
 }
 
 // UpdateCourse godoc
@@ -201,8 +230,27 @@ func (h *CourseHandler) UpdateCourse(c *gin.Context) {
 	if req.CourseType != nil {
 		existingCourse.CourseType = *req.CourseType
 	}
-	if req.Schedule != nil {
-		existingCourse.Schedule = *req.Schedule
+	schedules := make([]models.Schedule, len(req.Schedules))
+	if req.Schedules != nil {
+		for i, val := range req.Schedules {
+			if val.DayOfWeekMask < 0 && val.DayOfWeekMask > 128 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid day of week"})
+				return
+			}
+
+			switch val.Recurrence {
+			case models.Weekly, models.BiWeekly, models.MonthlyR:
+			default:
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Recurrence"})
+				return
+			}
+			schedules[i] = models.Schedule{
+				Recurrence: val.Recurrence,
+				StartTime:  time.Time(val.StartTime),
+				EndTime:    time.Time(val.EndTime),
+				DaysMask:   val.DayOfWeekMask,
+			}
+		}
 	}
 	if req.Level != nil {
 		// Validate CourseLevel if provided

@@ -29,6 +29,14 @@ const (
 	Advanced     CourseLevel = "advanced"
 )
 
+type ScheduleRecurrence string
+
+const (
+	Weekly   ScheduleRecurrence = "weekly"
+	BiWeekly ScheduleRecurrence = "bi-weekly"
+	MonthlyR ScheduleRecurrence = "monthly"
+)
+
 // Course represents a yoga session or course.
 type Course struct {
 	gorm.Model
@@ -48,10 +56,10 @@ type Schedule struct {
 	// Use a single integer field to represent multiple days of the week.
 	// Example: A course on Saturday and Sunday would have DaysMask = 3 (1+2).
 	DaysMask   DayOfWeekMask
-	StartTime  time.Time `gorm:"type:time"`
-	EndTime    time.Time `gorm:"type:time"`
-	Recurrence string    // e.g., "weekly", "bi-weekly", "monthly"
-	CourseID   uint      // Foreign key for the Course
+	StartTime  time.Time          `gorm:"type:time"`
+	EndTime    time.Time          `gorm:"type:time"`
+	Recurrence ScheduleRecurrence // e.g., "weekly", "bi-weekly", "monthly"
+	CourseID   uint               // Foreign key for the Course
 }
 
 // CourseSession represents a single, specific class instance.

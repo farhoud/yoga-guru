@@ -23,8 +23,8 @@ func NewEnrollmentHandler(db *gorm.DB) *EnrollmentHandler {
 
 // EnrollRequest defines the request body for course enrollment.
 type EnrollRequest struct {
-	CourseID      uint                    
-	EnrollmentType models.EnrollmentType 
+	CourseID       uint
+	EnrollmentType models.EnrollmentType
 	// Additional fields can be added for specific session dates for 'pre_session' if needed
 }
 
@@ -138,12 +138,12 @@ func (h *EnrollmentHandler) EnrollInCourse(c *gin.Context) {
 	}
 
 	enrollment := models.Enrollment{
-		UserID:        studentID,
-		CourseID:      req.CourseID,
-		EnrollmentType: req.EnrollmentType,
-		StartDate:     now,
-		EndDate:       endDate,
-		PricePaid:     totalPrice,
+		UserID:          studentID,
+		CourseID:        req.CourseID,
+		EnrollmentType:  req.EnrollmentType,
+		StartDate:       now,
+		ExpirationDate:  endDate,
+		PricePaid:       totalPrice,
 		DiscountApplied: discount,
 	}
 
