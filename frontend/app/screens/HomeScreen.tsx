@@ -12,19 +12,22 @@ import { Image } from "@/components/ui/image"
 import { Card } from "@/components/ui/card"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
-import { Avatar, AvatarFallbackText } from "@/components/ui/avatar"
+import { Avatar, AvatarFallbackText, AvatarImage } from "@/components/ui/avatar"
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu"
 import { Icon, AddIcon, GlobeIcon, PlayIcon, SettingsIcon } from "@/components/ui/icon"
+import { CalendarCog, LogOut } from "lucide-react-native"
 import { Pressable } from "@/components/ui/pressable"
 import { ImageBackground } from "@/components/ui/image-background"
+import { useAuth } from "@/context/AuthContext"
 
-interface HomeScreenProps extends AppStackScreenProps<"Home"> {}
+interface HomeScreenProps extends AppStackScreenProps<"Home"> { }
 
 const cardBackground = require("@assets/images/background.png")
 
 export const HomeScreen: FC<HomeScreenProps> = () => {
   // Pull in navigation via hook
   const navigation = useNavigation<AppNavigation>()
+  const { profile, role, logout } = useAuth()
 
   const insets = useSafeAreaInsets()
 
@@ -72,27 +75,27 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
                     {...triggerProps}
                   >
                     <Avatar>
-                      <AvatarFallbackText>فرهود</AvatarFallbackText>
+                      <AvatarFallbackText>{profile?.name}</AvatarFallbackText>
+                      <AvatarImage source={{ uri: profile?.avatarUrl }} />
                     </Avatar>
                   </Pressable>
                 )
               }}
             >
-              <MenuItem key="Add account" textValue="Add account">
-                <Icon as={AddIcon} size="sm" className="mr-2" />
-                <MenuItemLabel size="sm">Add account</MenuItemLabel>
-              </MenuItem>
-              <MenuItem key="Community" textValue="Community">
-                <Icon as={GlobeIcon} size="sm" className="mr-2" />
-                <MenuItemLabel size="sm">Community</MenuItemLabel>
-              </MenuItem>
-              <MenuItem key="Plugins" textValue="Plugins">
-                <Icon as={PlayIcon} size="sm" className="mr-2" />
-                <MenuItemLabel size="sm">Plugins</MenuItemLabel>
-              </MenuItem>
+
               <MenuItem key="Settings" textValue="Settings">
                 <Icon as={SettingsIcon} size="sm" className="mr-2" />
                 <MenuItemLabel size="sm">Settings</MenuItemLabel>
+              </MenuItem>
+              {
+                role === "instructor" && <MenuItem key="instructor" textValue="برنامه" onPress={() => navigation.navigate("Instructor", { screen: "Home" })}>
+                  <Icon as={CalendarCog} size="sm" className="mr-2" />
+                  <MenuItemLabel size="sm">برنامه</MenuItemLabel>
+                </MenuItem>
+              }
+              <MenuItem key="logout" textValue="خروج" onPress={logout}>
+                <Icon as={LogOut} size="sm" className="mr-2" />
+                <MenuItemLabel size="sm">خروج</MenuItemLabel>
               </MenuItem>
             </Menu>
             {/* Quote Section */}

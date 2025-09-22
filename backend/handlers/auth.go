@@ -140,5 +140,51 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "refresh": refresh})
+	c.JSON(http.StatusOK, gin.H{"token": token, "refresh": refresh, "role": user.Role})
+}
+
+// RefreshTokenRequest defines the request body for refreshing the token.
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refreshToken" binding:"required"`
+}
+
+// RefreshToken godoc
+// @Summary Refresh an access token
+// @Description Refresh a JWT access token using a valid refresh token.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param refresh body RefreshTokenRequest true "Refresh token"
+// @Success 200 {object} map[string]string "token: JWT_TOKEN, refresh: REFRESH_TOKEN"
+// @Failure 400 {object} map[string]string "error: Bad request"
+// @Failure 401 {object} map[string]string "error: Invalid refresh token"
+// @Failure 404 {object} map[string]string "error: User not found"
+// @Failure 500 {object} map[string]string "error: Internal server error"
+// @Router /refresh [post]
+func (h *AuthHandler) RefreshToken(c *gin.Context) {
+	var req RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	claims, err := middleware.ValidateToken(req.RefreshToken, h.Cfg)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		return
+	}
+
+	var user models.User
+	if err := h.DB.First(&user, "id = ?", claims.Subject).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	token, newRefresh, err := middleware.GenerateJWT(user.ID.String(), user.Role, h.Cfg)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate new token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token, "refresh": newRefresh, "role": user.Role})
 }

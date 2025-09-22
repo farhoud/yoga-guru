@@ -26,6 +26,7 @@ func SetupRouter(db *gorm.DB, cfg *config.Config) *gin.Engine {
 	// Public routes
 	r.POST("/register", authHandler.Register)
 	r.POST("/login", authHandler.Login)
+	r.POST("/refresh", authHandler.RefreshToken)
 	r.GET("/courses", courseHandler.GetCourses)        // Anyone can view courses
 	r.GET("/courses/:id", courseHandler.GetCourseByID) // Anyone can view a specific course
 

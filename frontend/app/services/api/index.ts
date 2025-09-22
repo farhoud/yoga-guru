@@ -9,7 +9,7 @@ import { ApiResponse, ApisauceInstance, create } from "apisauce"
 
 import Config from "@/config"
 
-import type { ApiConfig, LoginRequest, LoginResponse, RegisterRequest, UserProfileResponse } from "./types"
+import type { ApiConfig, LoginRequest, LoginResponse, RefreshTokenRequest, RegisterRequest, UserProfileResponse } from "./types"
 import { courses } from "./mockdata"
 import { FormValidationError, GeneralApiProblem, getFormValidationProblem, getGeneralApiProblem } from "./apiProblem"
 
@@ -47,6 +47,7 @@ export class Api {
 
   setAuthHeader(token: string) {
     this.apisauce.setHeader("Authorization", `Bearer ${token}`)
+
     console.log("token set", token)
   }
 
@@ -72,7 +73,7 @@ export class Api {
     }
   }
 
-  async Login(data: LoginRequest): Promise<LoginResponse | GeneralApiProblem> {
+  async Login(data: LoginRequest): Promise<{ kind: "ok", data: LoginResponse } | GeneralApiProblem> {
     const response: ApiResponse<LoginResponse> = await this.apisauce.post("/login", data)
     try {
 
@@ -81,8 +82,14 @@ export class Api {
         if (problem) return problem
       }
 
-
-      return { kind: "ok", token: response.data?.token || "", refresh: response.data?.refresh || "" }
+      console.debug(response)
+      return {
+        kind: "ok", data: {
+          token: response.data?.token || "",
+          refresh: response.data?.refresh || "",
+          role: response.data?.role || "user",
+        }
+      }
     } catch (e) {
       if (__DEV__ && e instanceof Error) {
         console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
@@ -91,7 +98,30 @@ export class Api {
     }
   }
 
-  async getProfile(): Promise<{ kind: "ok" } & UserProfileResponse | GeneralApiProblem> {
+  async Refresh(data: RefreshTokenRequest): Promise<{ kind: "ok", data: LoginResponse } | GeneralApiProblem> {
+    const response: ApiResponse<LoginResponse> = await this.apisauce.post("/refresh", data)
+    try {
+
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+
+      return {
+        kind: "ok", data: { token: response.data?.token || "", refresh: response.data?.refresh || "", role: response.data?.role || "user" }
+      }
+    }
+    catch (e) {
+      if (__DEV__ && e instanceof Error) {
+        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
+      }
+      return { kind: "bad-data" }
+    }
+  }
+
+
+  async getProfile(): Promise<{ kind: "ok", data: UserProfileResponse } | GeneralApiProblem> {
     const response: ApiResponse<UserProfileResponse> = await this.apisauce.get("/users/me")
     console.debug("getProfile", response)
     try {
@@ -102,7 +132,7 @@ export class Api {
       }
 
       if (response.data) {
-        return { kind: "ok", ...response.data }
+        return { kind: "ok", data: response.data }
       }
       return { kind: "bad-data" }
     } catch (e) {

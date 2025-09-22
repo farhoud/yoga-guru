@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { createIcon } from '@gluestack-ui/core/icon/creator';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';

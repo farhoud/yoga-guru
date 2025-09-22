@@ -17,6 +17,7 @@ export type GeneralApiProblem =
    * We're not allowed because we haven't identified ourself. This is 401.
    */
   | { kind: "unauthorized" }
+  | { kind: "expired-token" }
   /**
    * We don't have access to perform that request. This is 403.
    */
@@ -58,6 +59,9 @@ export function getGeneralApiProblem(response: ApiResponse<any>): GeneralApiProb
     case "CLIENT_ERROR":
       switch (response.status) {
         case 401:
+          if (response.data?.error && response.data.error.includes("token is expired")) {
+            return { kind: "expired-token" }
+          }
           return { kind: "unauthorized" }
         case 403:
           return { kind: "forbidden" }

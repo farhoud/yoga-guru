@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 
 [build]
 # Just plain old `go build`.
-cmd = "go build -o ./tmp/main ."
+cmd = "swag init --parseDependency --parseInternal && go build -o ./tmp/main ."
 # Binary file yields from `cmd`.
 bin = "tmp/main"
 # This is not a shell command. Some system will only use `air` command by default.

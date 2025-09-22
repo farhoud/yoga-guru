@@ -41,6 +41,13 @@ definitions:
     - password
     - phone
     type: object
+  handlers.RefreshTokenRequest:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
   handlers.RegisterRequest:
     properties:
       gender:
@@ -51,7 +58,7 @@ definitions:
       name:
         type: string
       password:
-        minLength: 8
+        minLength: 6
         type: string
       phone:
         type: string
@@ -84,6 +91,17 @@ definitions:
   handlers.UpdateUserRoleRequest:
     properties:
       role:
+        type: string
+    type: object
+  handlers.UserProfileResponse:
+    properties:
+      avatarURL:
+        type: string
+      gender:
+        type: string
+      name:
+        type: string
+      phone:
         type: string
     type: object
   models.Course:
@@ -188,13 +206,13 @@ definitions:
       gender:
         $ref: '#/definitions/models.UserGender'
       id:
-        type: integer
+        type: string
       name:
         type: string
       updatedAt:
         type: string
       userID:
-        type: integer
+        type: string
     type: object
   models.User:
     properties:
@@ -202,10 +220,8 @@ definitions:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
-      email:
-        type: string
       id:
-        type: integer
+        type: string
       passwordHash:
         description: Password hash, never expose in JSON
         type: string
@@ -216,8 +232,6 @@ definitions:
       role:
         $ref: '#/definitions/models.UserRole'
       updatedAt:
-        type: string
-      uuid:
         type: string
     type: object
   models.UserGender:
@@ -677,6 +691,54 @@ paths:
       summary: Log in a user
       tags:
       - Auth
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh a JWT access token using a valid refresh token.
+      parameters:
+      - description: Refresh token
+        in: body
+        name: refresh
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'token: JWT_TOKEN, refresh: REFRESH_TOKEN'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Invalid refresh token'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: User not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh an access token
+      tags:
+      - Auth
   /register:
     post:
       consumes:
@@ -788,7 +850,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/handlers.UserProfileResponse'
         "401":
           description: 'error: Unauthorized'
           schema:

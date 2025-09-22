@@ -59,16 +59,20 @@ export interface LoginRequest {
   password: string
 }
 
+export interface RefreshTokenRequest {
+  refreshToken: string
+}
+
 export interface LoginResponse {
-  kind: "ok"
   token: string
   refresh: string
+  role: "admin" | "instructor" | "user"
 }
 
 export interface UserProfileResponse {
   phone: string
   name: string
-  gender: "male" | "femail"
+  gender: "male" | "female"
   avatar: string
 }
 

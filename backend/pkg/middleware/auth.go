@@ -133,3 +133,21 @@ func AuthorizeRole(allowedRoles ...models.UserRole) gin.HandlerFunc {
 		c.Abort()
 	}
 }
+
+// ValidateToken validates a JWT string and returns the claims.
+func ValidateToken(tokenString string, cfg *config.Config) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(cfg.JWTSecret), nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("token validation failed: %w", err)
+	}
+
+	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+		return claims, nil
+	}
+	return nil, fmt.Errorf("invalid token")
+}

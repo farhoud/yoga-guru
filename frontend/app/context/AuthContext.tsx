@@ -28,6 +28,8 @@ export type AuthContextType = {
   logout: () => void
   login: (fromData: LoginFormData) => Promise<void>
   signup: (fromData: SignupFormData) => Promise<void>
+  role?: string
+  profile?: UserProfile
   loading: boolean
   error: string
 }
@@ -45,9 +47,7 @@ export type SignupFormData = z.infer<typeof signupSchema>
 
 // Zod schema for validation
 export const loginSchema = z.object({
-  phone: z
-    .string()
-    .regex(/^09\d{9}$/, "Invalid phone number format (e.g., +1234567890 or 1234567890)"),
+  phone: z.e164(),
   password: z.string().min(6, "Password must be at least 6 characters"),
 })
 
@@ -71,20 +71,25 @@ export const AuthProvider: FC<PropsWithChildren<AuthProviderProps>> = ({ childre
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [profile, setProfile] = useMMKVObject<UserProfile>("userProfile")
+  const [role, setRole] = useMMKVString("authRole")
 
 
 
   const logout = () => {
-    supabase.auth.signOut()
+    setToken(undefined)
+    setRefresh(undefined)
+    setProfile(undefined)
+    setRole(undefined)
   }
 
   const login = async (formData: LoginFormData) => {
     setLoading(true)
     setError("")
     const resp = await api.Login(formData)
-    if (resp.kind === "ok" && resp.token && resp.refresh) {
-      setToken(resp.token)
-      setRefresh(resp.refresh)
+    if (resp.kind === "ok") {
+      setToken(resp.data.token)
+      setRefresh(resp.data.refresh)
+      setRole(resp.data.role)
     } else {
       setError(resp.kind)
     }
@@ -110,10 +115,26 @@ export const AuthProvider: FC<PropsWithChildren<AuthProviderProps>> = ({ childre
     if (token) {
       api.setAuthHeader(token)
       api.getProfile().then(res => {
-        if (res.kind === "ok" && res.user) {
-          console.log("set user", res.user)
-          setProfile(res.user)
+        if (res.kind === "ok") {
+          console.log("set user", res.data)
+          setProfile(res.data)
+        } else if (res.kind === "expired-token" && refresh) {
+          console.log("else", res)
+          return api.Refresh({ refreshToken: refresh })
+        } else {
+          logout()
         }
+      }).then(resp => {
+        if (resp && resp.kind === "ok") {
+          setToken(resp.data.token)
+          setRefresh(resp.data.refresh)
+          setRole(resp.data.role)
+        } else {
+          setError(resp?.kind || "bad data")
+        }
+      }).catch(e => {
+        console.log("error:", e)
+        setError(String(e))
       })
     }
   }, [token])
@@ -140,6 +161,8 @@ export const AuthProvider: FC<PropsWithChildren<AuthProviderProps>> = ({ childre
     logout,
     login,
     signup,
+    role,
+    profile,
     error,
     loading,
   }

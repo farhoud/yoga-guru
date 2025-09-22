@@ -1,11 +1,14 @@
-'use client';
 import React from 'react';
 import { createIcon } from '@gluestack-ui/core/icon/creator';
 import { Path } from 'react-native-svg';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
 import { cssInterop } from 'nativewind';
 import { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
-import { PrimitiveIcon, IPrimitiveIcon, Svg } from '@gluestack-ui/core/icon/creator';
+import {
+  PrimitiveIcon,
+  IPrimitiveIcon,
+  Svg,
+} from '@gluestack-ui/core/icon/creator';
 
 export const UIIcon = createIcon({
   Root: PrimitiveIcon,
@@ -15,7 +18,7 @@ export const UIIcon = createIcon({
 >;
 
 const iconStyle = tva({
-  base: 'text-typography-950 fill-none pointer-events-none',
+  base: 'text-typography-950 fill-none stroke-current pointer-events-none',
   variants: {
     size: {
       '2xs': 'h-3 w-3',
@@ -35,7 +38,7 @@ cssInterop(UIIcon, {
       height: true,
       width: true,
       fill: true,
-      color: 'classNameColor',
+      color: true,
       stroke: true,
     },
   },
@@ -47,11 +50,17 @@ type IIConProps = IPrimitiveIcon &
 
 const Icon = React.forwardRef<React.ComponentRef<typeof UIIcon>, IIConProps>(
   function Icon({ size = 'md', className, ...props }, ref) {
+    const iconProps = {
+      fill: 'none',
+      stroke: 'currentColor',
+      ...props,
+    };
+
     if (typeof size === 'number') {
       return (
         <UIIcon
           ref={ref}
-          {...props}
+          {...iconProps}
           className={iconStyle({ class: className })}
           size={size}
         />
@@ -63,7 +72,7 @@ const Icon = React.forwardRef<React.ComponentRef<typeof UIIcon>, IIConProps>(
       return (
         <UIIcon
           ref={ref}
-          {...props}
+          {...iconProps}
           className={iconStyle({ class: className })}
         />
       );
@@ -71,7 +80,7 @@ const Icon = React.forwardRef<React.ComponentRef<typeof UIIcon>, IIConProps>(
     return (
       <UIIcon
         ref={ref}
-        {...props}
+        {...iconProps}
         className={iconStyle({ size, class: className })}
       />
     );
@@ -100,10 +109,16 @@ const createIconUI = ({ ...props }: ParameterTypes) => {
       React.ComponentPropsWithoutRef<typeof UIIconCreateIcon>,
     ref
   ) {
+    const iconProps = {
+      fill: 'none',
+      stroke: 'currentColor',
+      ...inComingProps,
+    };
+
     return (
       <UIIconCreateIcon
         ref={ref}
-        {...inComingProps}
+        {...iconProps}
         className={iconStyle({ size, class: className })}
       />
     );

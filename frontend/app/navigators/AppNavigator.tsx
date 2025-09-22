@@ -11,19 +11,15 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
-
 import Config from "@/config"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
-import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { useAppTheme } from "@/theme/context"
-
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAuth } from "@/context/AuthContext"
-import { LoginScreen } from "@/screens/AuthScreen/LoginScreen"
-import { SignupScreen } from "@/screens/AuthScreen/SignupScreen"
 import { AuthNavigator, AuthNavigatorParamList } from "./AuthNavigator"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { ExploreCoursesScreen } from "@/screens/ExploreCoursesScreen"
+import { InstructorTabsNavigator, InstructorTabsNavigatorParamList, InstructorTabs } from "./InstructorTabsNavigator"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -39,6 +35,7 @@ export type AppStackParamList = {
   // 🔥 Your screens go here
   Home: undefined
   ExploreCourses: undefined
+  Instructor: NavigatorScreenParams<InstructorTabsNavigatorParamList>
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
@@ -62,7 +59,7 @@ const AppStack = () => {
     theme: { colors },
   } = useAppTheme()
 
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, role } = useAuth()
 
   return (
     <Stack.Navigator
@@ -75,7 +72,10 @@ const AppStack = () => {
       }}
     >
       {isAuthenticated ? (
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Group>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Instructor" options={{ headerShown: false }} component={InstructorTabs} />
+        </Stack.Group>
       ) : (
         <Stack.Screen name="Auth" component={AuthNavigator} />
       )}
@@ -87,7 +87,7 @@ const AppStack = () => {
 }
 
 export interface NavigationProps
-  extends Partial<ComponentProps<typeof NavigationContainer<AppStackParamList>>> {}
+  extends Partial<ComponentProps<typeof NavigationContainer<AppStackParamList>>> { }
 
 export const AppNavigator = (props: NavigationProps) => {
   const { navigationTheme } = useAppTheme()

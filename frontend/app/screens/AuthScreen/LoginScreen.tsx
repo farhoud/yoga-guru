@@ -20,7 +20,7 @@ import { LoginFormData, loginSchema, useAuth } from "@/context/AuthContext"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AuthNavigatorParamList } from "@/navigators/AuthNavigator"
 
-interface LoginScreenProps extends NativeStackScreenProps<AuthNavigatorParamList, "Login"> {}
+interface LoginScreenProps extends NativeStackScreenProps<AuthNavigatorParamList, "Login"> { }
 
 export const LoginScreen: FC<LoginScreenProps> = () => {
   // Pull in navigation via hook
@@ -35,7 +35,7 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      phone: "",
+      phone: "+98",
       password: "",
     },
   })
