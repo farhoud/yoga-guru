@@ -88,7 +88,7 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
                 <MenuItemLabel size="sm">Settings</MenuItemLabel>
               </MenuItem>
               {
-                role === "instructor" && <MenuItem key="instructor" textValue="برنامه" onPress={() => navigation.navigate("Instructor", { screen: "Home" })}>
+                role === "instructor" && <MenuItem key="instructor" textValue="برنامه" onPress={() => navigation.navigate("Instructor", { screen: "Classes" })}>
                   <Icon as={CalendarCog} size="sm" className="mr-2" />
                   <MenuItemLabel size="sm">برنامه</MenuItemLabel>
                 </MenuItem>

@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { InstructorActivitiesScreen } from "@/screens/InstructorActivitiesScreen"
-import { InstructorHomeScreen } from "@/screens/InstructorHomeScreen"
+import { InstructorClassesScreen } from "@/screens/InstructorClassesScreen"
 import { Icon } from '@/components/ui/icon';
 import { HomeIcon, Logs } from 'lucide-react-native';
 import { Button, ButtonIcon } from '@/components/ui/button';
 
 export type InstructorTabsNavigatorParamList = {
-  Home: undefined
+  Classes: undefined
   Activities: undefined
 }
 
@@ -24,8 +24,8 @@ export function InstructorTabs() {
       }
     }}>
       <InstructorTabsNavigator.Screen
-        name="Home"
-        component={InstructorHomeScreen}
+        name="Classes"
+        component={InstructorClassesScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <ButtonIcon as={HomeIcon} color={color} />
