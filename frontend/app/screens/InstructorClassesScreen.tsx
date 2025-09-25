@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext"
 import { AppNavigation } from "@/navigators/AppNavigator"
 import { SettingsIcon, CalendarCog, LogOut } from "lucide-react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { Card } from "@/components/ui/card"
 
 interface InstructorClassesScreenProps extends NativeStackScreenProps<InstructorTabsNavigatorParamList, "Classes"> { }
 
@@ -60,7 +61,9 @@ export const InstructorClassesScreen: FC<InstructorClassesScreenProps> = () => {
           <MenuItemLabel size="sm">خروج</MenuItemLabel>
         </MenuItem>
       </Menu>
-      <Text text="instructorHome" />
+      <Card>
+
+      </Card>
     </View >
   )
 }

@@ -1,14 +1,53 @@
-# 🧘‍♂️ Yoga Guru
+# Project yoga-guru
 
-## The Ultimate Yoga Companion
+One Paragraph of project description goes here
 
-Welcome to Yoga Guru, your personal guide to the world of yoga. Whether you're a seasoned yogi or just starting your journey, our platform connects you with certified instructors, helps you find and join sessions, and provides a rich library of asanas (poses) to deepen your practice.
+## Getting Started
 
-## ✨ Features
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-  - **Find Your Guru:** Search and connect with qualified yoga instructors based on their style, experience, and location.
-  - **Join a Session:** Browse a variety of live and pre-recorded yoga sessions. Filter by level, duration, and focus (e.g., Vinyasa, Hatha, Ashtanga).
-  - **Learn Asanas:** Explore a comprehensive library of asanas with detailed instructions, benefits, and modifications. Each pose includes a visual guide and tips for proper alignment.
-  - **Personalized Dashboard:** Track your progress, save your favorite instructors and sessions, and receive personalized recommendations.
-  - **Community:** Interact with other yoga enthusiasts, share your progress, and get support on your journey.
+## MakeFile
 
+Run build make command with tests
+```bash
+make all
+```
+
+Build the application
+```bash
+make build
+```
+
+Run the application
+```bash
+make run
+```
+Create DB container
+```bash
+make docker-run
+```
+
+Shutdown DB Container
+```bash
+make docker-down
+```
+
+DB Integrations Test:
+```bash
+make itest
+```
+
+Live reload the application:
+```bash
+make watch
+```
+
+Run the test suite:
+```bash
+make test
+```
+
+Clean up binary from the last build:
+```bash
+make clean
+```

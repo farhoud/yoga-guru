@@ -1,12 +1,12 @@
-package handlers
+package controllers
 
 import (
 	"fmt"
 	"net/http"
-	"yoga-backend/config"
-	"yoga-backend/models"
-	"yoga-backend/pkg/middleware"
-	"yoga-backend/pkg/utils"
+	"yoga-guru/internal/config"
+	"yoga-guru/internal/middleware"
+	"yoga-guru/internal/models"
+	"yoga-guru/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strings"
 	"time"
-	"yoga-backend/config"
-	"yoga-backend/models"
+	"yoga-guru/internal/config"
+	"yoga-guru/internal/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

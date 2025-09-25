@@ -1,11 +1,11 @@
-package handlers
+package controllers
 
 import (
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
-	"yoga-backend/models"
+	"yoga-guru/internal/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

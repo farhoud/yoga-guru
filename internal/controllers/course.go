@@ -1,11 +1,11 @@
-package handlers
+package controllers
 
 import (
 	"net/http"
 	"strconv"
 	"time"
-	"yoga-backend/models"
-	"yoga-backend/pkg/utils"
+	"yoga-guru/internal/models"
+	"yoga-guru/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
