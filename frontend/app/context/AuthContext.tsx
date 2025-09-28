@@ -131,6 +131,8 @@ export const AuthProvider: FC<PropsWithChildren<AuthProviderProps>> = ({ childre
           setRole(resp.data.role)
         } else {
           setError(resp?.kind || "bad data")
+          setToken(undefined)
+          setRefresh(undefined)
         }
       }).catch(e => {
         console.log("error:", e)
