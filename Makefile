@@ -7,7 +7,7 @@ build:
 	@echo "Building..."
 	
 	
-	@CGO_ENABLED=1 GOOS=linux go build -o main cmd/api/main.go
+	@CGO_ENABLED=1 GOOS=linux go build -o tmp/main cmd/api/main.go
 
 # Run the application
 run:
@@ -46,7 +46,7 @@ clean:
 # Live Reload
 watch:
 	@if command -v air > /dev/null; then \
-            air; \
+            air -c air.toml & yarn --cwd ./frontend run android; \
             echo "Watching...";\
         else \
             read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
