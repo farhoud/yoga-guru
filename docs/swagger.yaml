@@ -1,4 +1,469 @@
 basePath: /
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  internal_controllers.CourseSchedule:
+    properties:
+      dayOfWeekMask:
+        $ref: '#/definitions/yoga-guru_internal_models.DayOfWeekMask'
+      endTime:
+        type: string
+      recurrence:
+        $ref: '#/definitions/yoga-guru_internal_models.ScheduleRecurrence'
+      startTime:
+        type: string
+    type: object
+  internal_controllers.CreateCourseRequest:
+    properties:
+      capacity:
+        type: integer
+      courseType:
+        type: string
+      level:
+        $ref: '#/definitions/yoga-guru_internal_models.CourseLevel'
+      price:
+        format: float64
+        type: number
+      schedules:
+        items:
+          $ref: '#/definitions/internal_controllers.CourseSchedule'
+        type: array
+      title:
+        type: string
+    type: object
+  internal_controllers.EnrollRequest:
+    properties:
+      courseID:
+        type: integer
+      enrollmentType:
+        $ref: '#/definitions/yoga-guru_internal_models.EnrollmentType'
+    type: object
+  internal_controllers.LoginRequest:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
+  internal_controllers.RefreshTokenRequest:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
+  internal_controllers.RegisterRequest:
+    properties:
+      gender:
+        enum:
+        - male
+        - female
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        type: string
+      role:
+        enum:
+        - student
+        - instructor
+        type: string
+    required:
+    - name
+    - password
+    - phone
+    type: object
+  internal_controllers.UpdateCourseRequest:
+    properties:
+      capacity:
+        type: integer
+      courseType:
+        type: string
+      level:
+        $ref: '#/definitions/yoga-guru_internal_models.CourseLevel'
+      price:
+        format: float64
+        type: number
+      schedules:
+        items:
+          $ref: '#/definitions/internal_controllers.CourseSchedule'
+        type: array
+      title:
+        type: string
+    type: object
+  internal_controllers.UpdateUserRoleRequest:
+    properties:
+      role:
+        type: string
+    type: object
+  internal_controllers.UserProfileResponse:
+    properties:
+      avatarURL:
+        type: string
+      gender:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  yoga-guru_internal_models.Attendance:
+    properties:
+      attended:
+        description: '`true` if the user attended, `false` otherwise'
+        type: boolean
+      courseSession:
+        $ref: '#/definitions/yoga-guru_internal_models.CourseSession'
+      courseSessionID:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      enrollment:
+        $ref: '#/definitions/yoga-guru_internal_models.Enrollment'
+      enrollmentID:
+        type: integer
+      id:
+        type: integer
+      recordedAt:
+        description: You might add a field like `NoShow` or `CanceledByStudent` for
+          more detailed tracking.
+        type: string
+      updatedAt:
+        type: string
+      user:
+        $ref: '#/definitions/yoga-guru_internal_models.User'
+      userID:
+        type: integer
+    type: object
+  yoga-guru_internal_models.Course:
+    properties:
+      capacity:
+        description: Max number of students
+        type: integer
+      courseType:
+        description: e.g., Hatha, Vinyasa, Ashtanga
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      instructor:
+        allOf:
+        - $ref: '#/definitions/yoga-guru_internal_models.User'
+        description: GORM association
+      instructorID:
+        description: ID of the instructor creating the course
+        type: integer
+      level:
+        $ref: '#/definitions/yoga-guru_internal_models.CourseLevel'
+      price:
+        description: Price per single session
+        format: float64
+        type: number
+      schedules:
+        items:
+          $ref: '#/definitions/yoga-guru_internal_models.Schedule'
+        type: array
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  yoga-guru_internal_models.CourseLevel:
+    enum:
+    - beginner
+    - intermediate
+    - advanced
+    type: string
+    x-enum-varnames:
+    - Beginner
+    - Intermediate
+    - Advanced
+  yoga-guru_internal_models.CourseSession:
+    properties:
+      course:
+        $ref: '#/definitions/yoga-guru_internal_models.Course'
+      courseID:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      isCanceled:
+        description: |-
+          Optional: You could add fields like `Room`, `InstructorID` here if they vary.
+          You might also add a boolean for `IsCancelled`.
+        type: boolean
+      scheduledAt:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  yoga-guru_internal_models.DayOfWeekMask:
+    enum:
+    - 1
+    - 2
+    - 4
+    - 8
+    - 16
+    - 32
+    - 64
+    type: integer
+    x-enum-comments:
+      Friday: 64 (1000000)
+      Monday: 4 (0000100)
+      Saturday: 1 (0000001)
+      Sunday: 2 (0000010)
+      Thursday: 32 (0100000)
+      Tuesday: 8 (0001000)
+      Wednesday: 16 (0010000)
+    x-enum-descriptions:
+    - 1 (0000001)
+    - 2 (0000010)
+    - 4 (0000100)
+    - 8 (0001000)
+    - 16 (0010000)
+    - 32 (0100000)
+    - 64 (1000000)
+    x-enum-varnames:
+    - Saturday
+    - Sunday
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+  yoga-guru_internal_models.Enrollment:
+    properties:
+      attendances:
+        description: A user can have many attendance records under this enrollment.
+        items:
+          $ref: '#/definitions/yoga-guru_internal_models.Attendance'
+        type: array
+      course:
+        $ref: '#/definitions/yoga-guru_internal_models.Course'
+      courseID:
+        description: This is the main course this enrollment is for
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      discountApplied:
+        format: float64
+        type: number
+      enrollmentType:
+        $ref: '#/definitions/yoga-guru_internal_models.EnrollmentType'
+      expirationDate:
+        type: string
+      id:
+        type: integer
+      payments:
+        items:
+          $ref: '#/definitions/yoga-guru_internal_models.Payment'
+        type: array
+      pricePaid:
+        format: float64
+        type: number
+      sessionsUsed:
+        description: Counter for fixed session packages
+        type: integer
+      startDate:
+        type: string
+      totalSessions:
+        description: Only for fixed session packages
+        type: integer
+      updatedAt:
+        type: string
+      user:
+        $ref: '#/definitions/yoga-guru_internal_models.User'
+      userID:
+        type: integer
+    type: object
+  yoga-guru_internal_models.EnrollmentType:
+    enum:
+    - pre_session
+    - monthly
+    - six_month
+    - yearly
+    type: string
+    x-enum-varnames:
+    - PreSession
+    - Monthly
+    - SixMonth
+    - Yearly
+  yoga-guru_internal_models.Payment:
+    properties:
+      amount:
+        description: The amount of this specific payment
+        format: float64
+        type: number
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      enrollment:
+        $ref: '#/definitions/yoga-guru_internal_models.Enrollment'
+      enrollmentID:
+        description: Foreign key to the enrollment this payment is for
+        type: integer
+      id:
+        type: integer
+      method:
+        allOf:
+        - $ref: '#/definitions/yoga-guru_internal_models.PaymentMethod'
+        description: e.g., 'card', 'cash'
+      paymentDate:
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/yoga-guru_internal_models.PaymentStatus'
+        description: e.g., 'succeeded', 'failed', 'pending'
+      transactionID:
+        description: External ID from payment gateway (e.g., Stripe)
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  yoga-guru_internal_models.PaymentMethod:
+    enum:
+    - card
+    - cash
+    - bank_transfer
+    - online_payment
+    type: string
+    x-enum-varnames:
+    - Card
+    - Cash
+    - BankTransfer
+    - OnlinePayment
+  yoga-guru_internal_models.PaymentStatus:
+    enum:
+    - pending
+    - succeeded
+    - failed
+    - refunded
+    type: string
+    x-enum-varnames:
+    - PaymentPending
+    - PaymentSucceeded
+    - PaymentFailed
+    - PaymentRefunded
+  yoga-guru_internal_models.Profile:
+    properties:
+      avatarURL:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      gender:
+        $ref: '#/definitions/yoga-guru_internal_models.UserGender'
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  yoga-guru_internal_models.Schedule:
+    properties:
+      courseID:
+        description: Foreign key for the Course
+        type: integer
+      createdAt:
+        type: string
+      daysMask:
+        allOf:
+        - $ref: '#/definitions/yoga-guru_internal_models.DayOfWeekMask'
+        description: |-
+          Use a single integer field to represent multiple days of the week.
+          Example: A course on Saturday and Sunday would have DaysMask = 3 (1+2).
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      endTime:
+        type: string
+      id:
+        type: integer
+      recurrence:
+        allOf:
+        - $ref: '#/definitions/yoga-guru_internal_models.ScheduleRecurrence'
+        description: e.g., "weekly", "bi-weekly", "monthly"
+      startTime:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  yoga-guru_internal_models.ScheduleRecurrence:
+    enum:
+    - weekly
+    - bi-weekly
+    - monthly
+    type: string
+    x-enum-varnames:
+    - Weekly
+    - BiWeekly
+    - MonthlyR
+  yoga-guru_internal_models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      passwordHash:
+        description: Password hash, never expose in JSON
+        type: string
+      phone:
+        type: string
+      profile:
+        $ref: '#/definitions/yoga-guru_internal_models.Profile'
+      role:
+        $ref: '#/definitions/yoga-guru_internal_models.UserRole'
+      updatedAt:
+        type: string
+    type: object
+  yoga-guru_internal_models.UserGender:
+    enum:
+    - male
+    - female
+    - ""
+    type: string
+    x-enum-varnames:
+    - Male
+    - Female
+    - None
+  yoga-guru_internal_models.UserRole:
+    enum:
+    - admin
+    - instructor
+    - student
+    type: string
+    x-enum-varnames:
+    - Admin
+    - Instructor
+    - Student
 host: localhost:8080
 info:
   contact:
@@ -12,7 +477,613 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Yoga Backend API
   version: "1.0"
-paths: {}
+paths:
+  /courses:
+    get:
+      description: Retrieve a list of all available yoga courses.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/yoga-guru_internal_models.Course'
+            type: array
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all courses
+      tags:
+      - Courses
+    post:
+      consumes:
+      - application/json
+      description: Create a new yoga course with details like title, type, schedule,
+        level, price, and capacity.
+      parameters:
+      - description: Course details
+        in: body
+        name: course
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controllers.CreateCourseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/yoga-guru_internal_models.Course'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new course (Instructor/Admin only)
+      tags:
+      - Courses
+  /courses/{id}:
+    delete:
+      description: Delete an existing yoga course. Only the course instructor or an
+        admin can delete a course.
+      parameters:
+      - description: Course ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a course (Instructor/Admin only)
+      tags:
+      - Courses
+    get:
+      description: Retrieve details of a specific yoga course by its ID.
+      parameters:
+      - description: Course ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yoga-guru_internal_models.Course'
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a course by ID
+      tags:
+      - Courses
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing yoga course. Only the course
+        instructor or an admin can update a course.
+      parameters:
+      - description: Course ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated course details
+        in: body
+        name: course
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controllers.UpdateCourseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yoga-guru_internal_models.Course'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing course (Instructor/Admin only)
+      tags:
+      - Courses
+  /enrollments:
+    post:
+      consumes:
+      - application/json
+      description: Allows a student to enroll in a yoga course with various enrollment
+        packages.
+      parameters:
+      - description: Enrollment details
+        in: body
+        name: enrollment
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controllers.EnrollRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/yoga-guru_internal_models.Enrollment'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Course not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: 'error: Already enrolled or course full'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enroll a student in a course (Student only)
+      tags:
+      - Enrollments
+  /enrollments/{id}:
+    delete:
+      description: Allows a student to cancel their enrollment, or an admin to cancel
+        any enrollment.
+      parameters:
+      - description: Enrollment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Enrollment not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Cancel an enrollment (Student/Admin only)
+      tags:
+      - Enrollments
+    get:
+      description: Retrieve details of a specific enrollment by its ID. (Admin/Enrolled
+        Student only)
+      parameters:
+      - description: Enrollment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yoga-guru_internal_models.Enrollment'
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: Enrollment not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get enrollment by ID
+      tags:
+      - Enrollments
+  /enrollments/me:
+    get:
+      description: Retrieve a list of all courses a student is enrolled in.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/yoga-guru_internal_models.Enrollment'
+            type: array
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get student's enrollments
+      tags:
+      - Enrollments
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password, returning a JWT token.
+      parameters:
+      - description: User login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controllers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'token: JWT_TOKEN'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Invalid credentials'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Log in a user
+      tags:
+      - Auth
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh a JWT access token using a valid refresh token.
+      parameters:
+      - description: Refresh token
+        in: body
+        name: refresh
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controllers.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'token: JWT_TOKEN, refresh: REFRESH_TOKEN'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Invalid refresh token'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: User not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh an access token
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with username, email, and password. Role defaults
+        to 'student'.
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controllers.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: User registered successfully'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: 'error: User with this email or username already exists'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Auth
+  /users/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: Allows an admin to update the role of any user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New role for the user
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/internal_controllers.UpdateUserRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/yoga-guru_internal_models.User'
+        "400":
+          description: 'error: Bad request'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: Forbidden'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: User not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a user's role (Admin only)
+      tags:
+      - Users
+  /users/me:
+    get:
+      description: Retrieve the profile details of the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_controllers.UserProfileResponse'
+        "401":
+          description: 'error: Unauthorized'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: User not found'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user's profile
+      tags:
+      - Users
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

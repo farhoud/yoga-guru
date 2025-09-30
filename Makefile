@@ -5,13 +5,11 @@ all: build test
 
 build:
 	@echo "Building..."
-	
-	
 	@CGO_ENABLED=1 GOOS=linux go build -o tmp/main cmd/api/main.go
 
 # Run the application
 run:
-	@swag init --parseDependency --parseInternal --dir ./cmd/api
+	@swag init --parseDependency --parseInternal -g ./cmd/api/main.go -o ./docs
 	@go run cmd/api/main.go &
 	@yarn --cwd ./frontend
 	@yarn --cwd ./frontend run android
@@ -45,6 +43,7 @@ clean:
 
 # Live Reload
 watch:
+	@swag init --parseDependency --parseInternal -g ./cmd/api/main.go -o ./docs
 	@if command -v air > /dev/null; then \
             air -c air.toml & yarn --cwd ./frontend run android; \
             echo "Watching...";\

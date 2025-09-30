@@ -23,7 +23,1598 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {},
+    "paths": {
+        "/courses": {
+            "get": {
+                "description": "Retrieve a list of all available yoga courses.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Get all courses",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/yoga-guru_internal_models.Course"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new yoga course with details like title, type, schedule, level, price, and capacity.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Create a new course (Instructor/Admin only)",
+                "parameters": [
+                    {
+                        "description": "Course details",
+                        "name": "course",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.CreateCourseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/yoga-guru_internal_models.Course"
+                        }
+                    },
+                    "400": {
+                        "description": "error: Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "error: Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{id}": {
+            "get": {
+                "description": "Retrieve details of a specific yoga course by its ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Get a course by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Course ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/yoga-guru_internal_models.Course"
+                        }
+                    },
+                    "404": {
+                        "description": "error: Course not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update the details of an existing yoga course. Only the course instructor or an admin can update a course.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Update an existing course (Instructor/Admin only)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Course ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated course details",
+                        "name": "course",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.UpdateCourseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/yoga-guru_internal_models.Course"
+                        }
+                    },
+                    "400": {
+                        "description": "error: Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "error: Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: Course not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete an existing yoga course. Only the course instructor or an admin can delete a course.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Delete a course (Instructor/Admin only)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Course ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "error: Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: Course not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/enrollments": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a student to enroll in a yoga course with various enrollment packages.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Enrollments"
+                ],
+                "summary": "Enroll a student in a course (Student only)",
+                "parameters": [
+                    {
+                        "description": "Enrollment details",
+                        "name": "enrollment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.EnrollRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/yoga-guru_internal_models.Enrollment"
+                        }
+                    },
+                    "400": {
+                        "description": "error: Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "error: Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: Course not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "error: Already enrolled or course full",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/enrollments/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all courses a student is enrolled in.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Enrollments"
+                ],
+                "summary": "Get student's enrollments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/yoga-guru_internal_models.Enrollment"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/enrollments/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve details of a specific enrollment by its ID. (Admin/Enrolled Student only)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Enrollments"
+                ],
+                "summary": "Get enrollment by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enrollment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/yoga-guru_internal_models.Enrollment"
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "error: Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: Enrollment not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a student to cancel their enrollment, or an admin to cancel any enrollment.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Enrollments"
+                ],
+                "summary": "Cancel an enrollment (Student/Admin only)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enrollment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "error: Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: Enrollment not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Authenticate user with email and password, returning a JWT token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Log in a user",
+                "parameters": [
+                    {
+                        "description": "User login credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "token: JWT_TOKEN",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error: Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Invalid credentials",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/refresh": {
+            "post": {
+                "description": "Refresh a JWT access token using a valid refresh token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh an access token",
+                "parameters": [
+                    {
+                        "description": "Refresh token",
+                        "name": "refresh",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.RefreshTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "token: JWT_TOKEN, refresh: REFRESH_TOKEN",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error: Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Invalid refresh token",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: User not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Register a new user with username, email, and password. Role defaults to 'student'.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "message: User registered successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error: Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "error: User with this email or username already exists",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve the profile details of the authenticated user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get current user's profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.UserProfileResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: User not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/role": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows an admin to update the role of any user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user's role (Admin only)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New role for the user",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controllers.UpdateUserRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/yoga-guru_internal_models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "error: Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "error: Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "error: User not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_controllers.CourseSchedule": {
+            "type": "object",
+            "properties": {
+                "dayOfWeekMask": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.DayOfWeekMask"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "recurrence": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.ScheduleRecurrence"
+                },
+                "startTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controllers.CreateCourseRequest": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer"
+                },
+                "courseType": {
+                    "type": "string"
+                },
+                "level": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.CourseLevel"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "schedules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_controllers.CourseSchedule"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controllers.EnrollRequest": {
+            "type": "object",
+            "properties": {
+                "courseID": {
+                    "type": "integer"
+                },
+                "enrollmentType": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.EnrollmentType"
+                }
+            }
+        },
+        "internal_controllers.LoginRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controllers.RefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refreshToken"
+            ],
+            "properties": {
+                "refreshToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controllers.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "gender": {
+                    "type": "string",
+                    "enum": [
+                        "male",
+                        "female"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "student",
+                        "instructor"
+                    ]
+                }
+            }
+        },
+        "internal_controllers.UpdateCourseRequest": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer"
+                },
+                "courseType": {
+                    "type": "string"
+                },
+                "level": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.CourseLevel"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "schedules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_controllers.CourseSchedule"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controllers.UpdateUserRoleRequest": {
+            "type": "object",
+            "properties": {
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controllers.UserProfileResponse": {
+            "type": "object",
+            "properties": {
+                "avatarURL": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "yoga-guru_internal_models.Attendance": {
+            "type": "object",
+            "properties": {
+                "attended": {
+                    "description": "` + "`" + `true` + "`" + ` if the user attended, ` + "`" + `false` + "`" + ` otherwise",
+                    "type": "boolean"
+                },
+                "courseSession": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.CourseSession"
+                },
+                "courseSessionID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "enrollment": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.Enrollment"
+                },
+                "enrollmentID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "recordedAt": {
+                    "description": "You might add a field like ` + "`" + `NoShow` + "`" + ` or ` + "`" + `CanceledByStudent` + "`" + ` for more detailed tracking.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.User"
+                },
+                "userID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "yoga-guru_internal_models.Course": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "description": "Max number of students",
+                    "type": "integer"
+                },
+                "courseType": {
+                    "description": "e.g., Hatha, Vinyasa, Ashtanga",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "instructor": {
+                    "description": "GORM association",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/yoga-guru_internal_models.User"
+                        }
+                    ]
+                },
+                "instructorID": {
+                    "description": "ID of the instructor creating the course",
+                    "type": "integer"
+                },
+                "level": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.CourseLevel"
+                },
+                "price": {
+                    "description": "Price per single session",
+                    "type": "number",
+                    "format": "float64"
+                },
+                "schedules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/yoga-guru_internal_models.Schedule"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "yoga-guru_internal_models.CourseLevel": {
+            "type": "string",
+            "enum": [
+                "beginner",
+                "intermediate",
+                "advanced"
+            ],
+            "x-enum-varnames": [
+                "Beginner",
+                "Intermediate",
+                "Advanced"
+            ]
+        },
+        "yoga-guru_internal_models.CourseSession": {
+            "type": "object",
+            "properties": {
+                "course": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.Course"
+                },
+                "courseID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isCanceled": {
+                    "description": "Optional: You could add fields like ` + "`" + `Room` + "`" + `, ` + "`" + `InstructorID` + "`" + ` here if they vary.\nYou might also add a boolean for ` + "`" + `IsCancelled` + "`" + `.",
+                    "type": "boolean"
+                },
+                "scheduledAt": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "yoga-guru_internal_models.DayOfWeekMask": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64
+            ],
+            "x-enum-comments": {
+                "Friday": "64 (1000000)",
+                "Monday": "4 (0000100)",
+                "Saturday": "1 (0000001)",
+                "Sunday": "2 (0000010)",
+                "Thursday": "32 (0100000)",
+                "Tuesday": "8 (0001000)",
+                "Wednesday": "16 (0010000)"
+            },
+            "x-enum-descriptions": [
+                "1 (0000001)",
+                "2 (0000010)",
+                "4 (0000100)",
+                "8 (0001000)",
+                "16 (0010000)",
+                "32 (0100000)",
+                "64 (1000000)"
+            ],
+            "x-enum-varnames": [
+                "Saturday",
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ]
+        },
+        "yoga-guru_internal_models.Enrollment": {
+            "type": "object",
+            "properties": {
+                "attendances": {
+                    "description": "A user can have many attendance records under this enrollment.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/yoga-guru_internal_models.Attendance"
+                    }
+                },
+                "course": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.Course"
+                },
+                "courseID": {
+                    "description": "This is the main course this enrollment is for",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "discountApplied": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "enrollmentType": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.EnrollmentType"
+                },
+                "expirationDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "payments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/yoga-guru_internal_models.Payment"
+                    }
+                },
+                "pricePaid": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "sessionsUsed": {
+                    "description": "Counter for fixed session packages",
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "totalSessions": {
+                    "description": "Only for fixed session packages",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.User"
+                },
+                "userID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "yoga-guru_internal_models.EnrollmentType": {
+            "type": "string",
+            "enum": [
+                "pre_session",
+                "monthly",
+                "six_month",
+                "yearly"
+            ],
+            "x-enum-varnames": [
+                "PreSession",
+                "Monthly",
+                "SixMonth",
+                "Yearly"
+            ]
+        },
+        "yoga-guru_internal_models.Payment": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "The amount of this specific payment",
+                    "type": "number",
+                    "format": "float64"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "enrollment": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.Enrollment"
+                },
+                "enrollmentID": {
+                    "description": "Foreign key to the enrollment this payment is for",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "description": "e.g., 'card', 'cash'",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/yoga-guru_internal_models.PaymentMethod"
+                        }
+                    ]
+                },
+                "paymentDate": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "e.g., 'succeeded', 'failed', 'pending'",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/yoga-guru_internal_models.PaymentStatus"
+                        }
+                    ]
+                },
+                "transactionID": {
+                    "description": "External ID from payment gateway (e.g., Stripe)",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "yoga-guru_internal_models.PaymentMethod": {
+            "type": "string",
+            "enum": [
+                "card",
+                "cash",
+                "bank_transfer",
+                "online_payment"
+            ],
+            "x-enum-varnames": [
+                "Card",
+                "Cash",
+                "BankTransfer",
+                "OnlinePayment"
+            ]
+        },
+        "yoga-guru_internal_models.PaymentStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "succeeded",
+                "failed",
+                "refunded"
+            ],
+            "x-enum-varnames": [
+                "PaymentPending",
+                "PaymentSucceeded",
+                "PaymentFailed",
+                "PaymentRefunded"
+            ]
+        },
+        "yoga-guru_internal_models.Profile": {
+            "type": "object",
+            "properties": {
+                "avatarURL": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "gender": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.UserGender"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "yoga-guru_internal_models.Schedule": {
+            "type": "object",
+            "properties": {
+                "courseID": {
+                    "description": "Foreign key for the Course",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "daysMask": {
+                    "description": "Use a single integer field to represent multiple days of the week.\nExample: A course on Saturday and Sunday would have DaysMask = 3 (1+2).",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/yoga-guru_internal_models.DayOfWeekMask"
+                        }
+                    ]
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "recurrence": {
+                    "description": "e.g., \"weekly\", \"bi-weekly\", \"monthly\"",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/yoga-guru_internal_models.ScheduleRecurrence"
+                        }
+                    ]
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "yoga-guru_internal_models.ScheduleRecurrence": {
+            "type": "string",
+            "enum": [
+                "weekly",
+                "bi-weekly",
+                "monthly"
+            ],
+            "x-enum-varnames": [
+                "Weekly",
+                "BiWeekly",
+                "MonthlyR"
+            ]
+        },
+        "yoga-guru_internal_models.User": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "passwordHash": {
+                    "description": "Password hash, never expose in JSON",
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "profile": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.Profile"
+                },
+                "role": {
+                    "$ref": "#/definitions/yoga-guru_internal_models.UserRole"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "yoga-guru_internal_models.UserGender": {
+            "type": "string",
+            "enum": [
+                "male",
+                "female",
+                ""
+            ],
+            "x-enum-varnames": [
+                "Male",
+                "Female",
+                "None"
+            ]
+        },
+        "yoga-guru_internal_models.UserRole": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "instructor",
+                "student"
+            ],
+            "x-enum-varnames": [
+                "Admin",
+                "Instructor",
+                "Student"
+            ]
+        }
+    },
     "securityDefinitions": {
         "BearerAuth": {
             "description": "Type \"Bearer\" followed by a space and JWT token.",
